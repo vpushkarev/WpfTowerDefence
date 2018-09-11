@@ -1,0 +1,34 @@
+﻿<Window x:Class="WpfTowerDefence.AddTower"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+        xmlns:local="clr-namespace:WpfTowerDefence"
+        xmlns:enums="clr-namespace:WpfTowerDefence.Enums"
+        xmlns:converters="clr-namespace:WpfTowerDefence.Converters"
+        xmlns:sys="clr-namespace:System;assembly=mscorlib"
+        mc:Ignorable="d"
+        Title="Покупка союзника" Height="300" Width="300">
+    <Window.Resources>
+        <ObjectDataProvider x:Key="TowerFromEnum" MethodName="GetValues"
+                        ObjectType="{x:Type sys:Enum}">
+            <ObjectDataProvider.MethodParameters>
+                <x:Type TypeName="enums:TowerType"/>
+            </ObjectDataProvider.MethodParameters>
+        </ObjectDataProvider>
+        <converters:EnumDescriptionConverter x:Key="EnumDescriptionConverter"/>
+    </Window.Resources>
+    <Grid>
+        <StackPanel HorizontalAlignment="Left" Height="269" VerticalAlignment="Top" Width="292">
+            <ListBox x:Name="towerType_listBox" Height="157" ItemsSource="{Binding Source={StaticResource TowerFromEnum}}">
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                        <TextBlock Text="{Binding Converter={StaticResource EnumDescriptionConverter}}"/>
+                    </DataTemplate>
+            </ListBox.ItemTemplate>
+            </ListBox>
+            <Button x:Name="button" Content="Купить союзника" RenderTransformOrigin="0.507,3.633" Margin="90,0,90,0" Click="button_Click"/>
+        </StackPanel>
+
+    </Grid>
+</Window>

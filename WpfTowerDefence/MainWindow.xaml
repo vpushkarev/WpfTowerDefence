@@ -1,0 +1,13 @@
+﻿<Window x:Class="WpfTowerDefence.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Tower Defence" Height="368.442" Width="315.844"
+        WindowStartupLocation="CenterScreen" ResizeMode="NoResize" WindowStyle="SingleBorderWindow" Closed="Window_Closed">
+    <Grid>
+        <Grid  Height="318" HorizontalAlignment="Left" Margin="10,12,0,0" VerticalAlignment="Top" Width="290" Background="White">
+            <Button Content="Старт"         Height="40" HorizontalAlignment="Center" Margin="0,0,0,0" Name="startButton" VerticalAlignment="Center" Width="150" Background="Green" Foreground="White" BorderBrush="White" FontFamily="Times New Roman" FontSize="18" FontWeight="Bold" Click="startButton_Click" Focusable="False" Grid.Column="1" />
+            <Button Content="Начать заново" Height="40" HorizontalAlignment="Center" Margin="70,198,70,80" Name="restartButton" VerticalAlignment="Center" Width="150" Background="BurlyWood" Foreground="Purple" BorderBrush="White" FontFamily="Times New Roman" FontSize="18" FontWeight="Bold" Click="restartButton_Click" Focusable="False" />
+            <Label  Content=""              Height="40" HorizontalAlignment="Center" Margin="-70,-198,-70,0" Name="resultLabel" VerticalAlignment="Center" Width="150" FontFamily="Times New Roman" FontSize="20" FontWeight="Bold" HorizontalContentAlignment="Center"/>
+        </Grid>
+    </Grid>
+</Window>
