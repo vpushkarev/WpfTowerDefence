@@ -1,16 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 
 namespace WpfTowerDefence
 {
@@ -21,35 +11,85 @@ namespace WpfTowerDefence
     {
         Cell cell;
         Canvas canvasMap;
-        internal Tower tower;
         TowerManager towerManager;
+        Player player;
+        Game game;
 
-        internal AddTower( Cell cell, TowerManager towerManager, Canvas canvasMap)
+        internal AddTower(Cell cell, TowerManager towerManager, Canvas canvasMap, Player player, Game game)
         {
             this.cell = cell;
             this.canvasMap = canvasMap;
             this.towerManager = towerManager;
+            this.player = player;
+            this.game = game;
             InitializeComponent();
         }
 
-        private void button_Click(object sender, RoutedEventArgs e)
+        private void buyButton_Click(object sender, RoutedEventArgs e)
         {
-            AddNewTower( cell/*, towerManager, canvasMap*/);
-            this.Close();
-        }
-
-        private void AddNewTower(Cell cell/*, TowerManager towerManager, Canvas canvasMap*/)
-        {
-            if (towerManager != null && cell.state != 1 && cell.state != 2)
+            AddNewTower();
+            if (errorTextBox.Text.Equals(""))
             {
-                Application.Current.Dispatcher.Invoke((Action)(() =>
-                {
-                    tower = new Tower(cell, canvasMap);
-                    towerManager.AddTower(tower);
-                }));
-                cell.state = 2;
+                this.Close();
             }
         }
-   
+
+        private void AddNewTower()
+        {
+            Tower towerToAdd = null;
+            if (towerType_listBox.SelectedItem == null)
+            {
+                return;
+            }
+
+            var selectedTowerType = towerType_listBox.SelectedItem.ToString();
+            if (selectedTowerType != null && towerManager != null && cell.isGround)
+            {
+                switch (selectedTowerType)
+                {
+                    case "ArcherTower":
+                        {
+                            towerToAdd = (player.Money >= ArcherTower.price) ? new ArcherTower(cell, canvasMap, player) : null;
+                            break;
+                        }
+                    case "CatapultTower":
+                        {
+                            towerToAdd = (player.Money >= CatapultTower.price) ? new CatapultTower(cell, canvasMap, player) : null;
+                            break;
+                        }
+                    case "TrebuchetTower":
+                        {
+                            towerToAdd = (player.Money >= TrebuchetTower.price) ? new TrebuchetTower(cell, canvasMap, player) : null;
+                            break;
+                        }
+                }
+
+                if (towerToAdd == null)
+                {
+                    errorTextBox.Text = "Недостаточно денег для покупки этой башни.";
+                }
+                else
+                {
+                    errorTextBox.Text = "";
+                    player.Money -= towerToAdd.Price;
+                    towerToAdd.onCount += KillCost_onCount;
+                    Application.Current.Dispatcher.Invoke((Action)(() =>
+                    {
+                        towerManager.AddTower(towerToAdd);
+                    }));
+                    cell.state = 2;
+                }
+            }
+        }
+
+        private void KillCost_onCount(int killCost)
+        {
+            player.Money += killCost;
+        }
+
+        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            game.isSingleAddTower = false;
+        }
     }
 }

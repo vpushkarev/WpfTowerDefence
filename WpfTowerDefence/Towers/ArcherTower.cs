@@ -1,19 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Controls;
+﻿using System.Windows.Controls;
+using System.Windows.Media;
 
 namespace WpfTowerDefence
 {
     class ArcherTower : Tower
     {
-        public ArcherTower(Cell location, Canvas canvasMap) : base(location, canvasMap)
+        static SolidColorBrush colorNorm = Brushes.SkyBlue;
+        public static int price = 10;
+        public ArcherTower(Cell location, Canvas canvasMap, Player player) : base(location, canvasMap, colorNorm, price, player)
         {
-            range = 3;
-            power = 1;
-            price = 10;
+            this.range = 3;
+            this.power = 1;
         }
     }
 }

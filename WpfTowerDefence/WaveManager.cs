@@ -6,23 +6,22 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Threading;
 
 namespace WpfTowerDefence
 {
     class WaveManager
     {
+        public List<Enemy> enemies = new List<Enemy>();
         public List<Cell> WayPoints { get; private set; }
         public Canvas CanvasMap { get; private set; }
         public Game XamlGame { get; private set; }
-
         int creepSpawnTimer = 7000;
         public int waveNumber = 1;
+        public int waveCount = 5;
         public List<WaveSpawn> WavesSpawn = new List<WaveSpawn>();
-
-        Timer timer;
-        WaveSpawn enemySpawn;
-
-        System.Windows.Threading.DispatcherTimer DT;
+        WaveSpawn waveSpawn;
+        private DispatcherTimer timer;
 
         public WaveManager(List<Cell> wayPoints, Canvas canvasMap, Game xamlGame)
         {
@@ -33,43 +32,42 @@ namespace WpfTowerDefence
 
         public void StartWaveSpawner()
         {
-            timerStart();
-
-            //timer = new Timer(GenerateWave, null, 0, creepSpawnTimer);
-            //GenerateWave(new object(), null);
+            timerWaveStart();
         }
 
         public void GenerateWave(Object sender, EventArgs e)
         {
-            //await Task.Delay(7000);
-            if (waveNumber == 5)
+            if (waveNumber == waveCount)
             {
-                //timer.Change(Timeout.Infinite, Timeout.Infinite);
-                //timer.Dispose();
+                timer.Stop();
             }
             Application.Current.Dispatcher.Invoke((Action)(() =>
             {
-              enemySpawn = new WaveSpawn(WayPoints, CanvasMap, waveNumber, waveNumber, XamlGame, timer);
-                WavesSpawn.Add(enemySpawn);
+              waveSpawn = new WaveSpawn(WayPoints, CanvasMap, waveNumber, waveNumber);
+                WavesSpawn.Add(waveSpawn);
+                waveSpawn.onCount += EnemySpawn_onCount;
             }));
 
-          enemySpawn.GenerateEnemiesWave();
+           waveSpawn.GenerateEnemiesWave();
             waveNumber++;
+        }
+
+        private void EnemySpawn_onCount(Enemy enemy)
+        {
+            enemies.Add(enemy);
+        }
+
+        private void timerWaveStart()
+        {
+            timer = new DispatcherTimer();
+            timer.Tick += new EventHandler(GenerateWave);
+            timer.Interval = new TimeSpan(0, 0, 0, 0, creepSpawnTimer);
+            timer.Start();
         }
 
         public void StopWaveSpawner()
         {
-            //timer.Change(Timeout.Infinite, Timeout.Infinite);
-            //Thread.Sleep(2000);
-            //timer.Dispose();
-        }
-
-        private void timerStart()
-        {
-            DT = new System.Windows.Threading.DispatcherTimer();// System.Windows.Threading.DispatcherPriority.Render);  
-            DT.Tick += new EventHandler(GenerateWave);
-            DT.Interval = new TimeSpan(0, 0, 0, 0, 3000);
-            DT.Start();
+            timer.Stop();
         }
 
     }

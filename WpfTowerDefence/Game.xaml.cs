@@ -1,18 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
+using System.Windows.Threading;
 
 namespace WpfTowerDefence
 {
@@ -21,32 +13,34 @@ namespace WpfTowerDefence
     /// </summary>
     public partial class Game : Window
     {
-        public Window startWindow;
-        public string resultGame;
-
-        int fieldHeight = 6, fieldWight = 9;
-        List<Cell> wayPoints = new List<Cell>();
-        Cell firstCell;
-        int currWayX, currWayY;
-
-        Cell[,] allCells = new Cell[6, 9];
-
-        string[] path =
-    {
-        "010111000",
-        "010101000",
-        "010101000",
-        "010101111",
-        "010100000",
-        "011100000",
-    };
-
+        Window startWindow;
         WaveManager waveManager;
         TowerManager towerManager;
-        CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
-        System.Windows.Threading.DispatcherTimer DT;
+        Player player;
+        public string resultGame;
 
+        string[] path =
+            {
+            "010111000",
+            "010101000",
+            "010101000",
+            "010101111",
+            "010100000",
+            "011100000"
+        };
 
+        Cell firstCell;
+        static int fieldHeight = 6, fieldWight = 9;
+        Cell[,] allCells = new Cell[fieldHeight, fieldWight];
+        List<Cell> wayPoints = new List<Cell>();
+        int currWayX, currWayY;
+        DispatcherTimer timer;
+        int EnemyInterval = 1000;
+        public bool isSingleAddTower = false;
+
+        //CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
+        //Thread playerThread;
+        //Thread unitsThread;
 
         public Game(Window startWindow)
         {
@@ -56,55 +50,71 @@ namespace WpfTowerDefence
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            CancellationToken token = cancellationTokenSource.Token;
+            //CancellationToken token = cancellationTokenSource.Token;
+            CreateLevel();
+            LoadWaypoints();
+            player = new Player();
+            waveManager = new WaveManager(wayPoints, CanvasMap, this);
+            towerManager = new TowerManager(waveManager, waveManager.WavesSpawn);
+
+            //playerThread = new Thread(() =>
+            //{
+                player.timerPlayerStart();
+                Application.Current.Dispatcher.Invoke((Action)(() =>
+                {
+                    MoneyLabel.Content = player.Money;
+                }));
+                player.onCount += ChangedMoney_onCount;
+            //});
+            //playerThread.Start();
+
+            waveManager.StartWaveSpawner();
+            towerManager.ActivateTowers();
+            timerEnemiesStart();
 
             //var task = new Thread(async () => await TestAsync(token));
             //task.Start();
 
-            CreateLevel();
-            LoadWaypoints();
-
-            
-                //waveManager = new WaveManager(wayPoints, CanvasMap, this);
-                // towerManager = new TowerManager(waveManager, CanvasMap, allCells, waveManager.WavesSpawn);
-
-
-            //Debug.WriteLine("GEnerate Wave:");
-            //waveManager.GenerateWave();
-
-           // waveManager.StartWaveSpawner();
-
-
-
-            var task = new Thread(async () => await TestAsync(token));
-            task.Start();
-
             //await TestAsync();
         }
 
-       
-
-
-        private Task TestAsync(CancellationToken token)
+        private void ChangedMoney_onCount(double money)
         {
-            
-            //timerStart();
-            return Task.Factory.StartNew(() => DT_Tick(new Object(), token));// DT.Start());
+            MoneyLabel.Content = money; ;
         }
 
-        void DT_Tick(object obj, CancellationToken token/*object sender, EventArgs e*/)
+        //private Task TestAsync(CancellationToken token)
+        //{
+        //    return Task.Factory.StartNew(() => DT_Tick(new Object(), token));
+        //}
+
+        //void DT_Tick(object obj, CancellationToken token)
+        //{
+        //    player.timerPlayerStart();
+        //}
+
+        private void timerEnemiesStart()
         {
-            Application.Current.Dispatcher.Invoke((Action)(() =>
+            timer = new DispatcherTimer();
+            timer.Tick += new EventHandler(MoveEnemeis);
+            timer.Interval = new TimeSpan(0, 0, 0, 0, EnemyInterval);
+            timer.Start();
+        }
+
+        public void MoveEnemeis(Object obj, EventArgs e)
+        {
+            if (waveManager.waveNumber == waveManager.waveCount + 1 && waveManager.enemies.Count == 0)
             {
-                waveManager = new WaveManager(wayPoints, CanvasMap, this);
-                // towerManager = new TowerManager(waveManager, CanvasMap, allCells, waveManager.WavesSpawn);
-            }));
-
-            //Debug.WriteLine("GEnerate Wave:");
-            //waveManager.GenerateWave();
-
-            waveManager.StartWaveSpawner();
-            // towerManager.ActivateTowers();
+                this.resultGame = "Вы победили!";
+                this.Close();
+            }
+            else
+            {
+                for (int i = 0; i < waveManager.enemies.Count; i++)
+                {
+                    waveManager.enemies[i].Update(this, timer);
+                }
+            }
         }
 
         private void CreateLevel()
@@ -121,13 +131,11 @@ namespace WpfTowerDefence
         private void CreateCell(SolidColorBrush color, int GroundIndex, int x, int y)
         {
             int x0 = 10, y0 = 10;
-
             Point cellPos = new Point(x0 + (x * 50), y0 + (y * 50));
 
             Cell cell = new Cell((int)cellPos.X, (int)cellPos.Y);
             Button cellButton = CreateButton(cellPos, color, GroundIndex, cell);
             CanvasMap.Children.Insert(x + y, cellButton);
-
             cell.SetState(GroundIndex);
 
             if (!cell.isGround && firstCell == null)
@@ -136,7 +144,6 @@ namespace WpfTowerDefence
                 currWayX = x;
                 currWayY = y;
             }
-
             allCells[y, x] = cell;
         }
 
@@ -163,33 +170,15 @@ namespace WpfTowerDefence
         /************************************************/
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            var button = sender as Button;
-            var tag = button.Tag as Cell;
-            AddTower addTower = new AddTower(tag, towerManager, CanvasMap);
-            addTower.Show();
-            /*if (addTower.tower != null)
+            if (!isSingleAddTower)
             {
-                towerManager.AddTower(addTower.tower);
-            }  */
-        }
-
-        class AddTowerData
-        {
-            public Point location;
-            public int GroundIndex;
-            public Cell cell;
-            TowerManager towerManager;
-            Canvas canvasMap;
-            public AddTowerData(/*Point location, int GroundIndex,*/ Cell cell, TowerManager towerManager, Canvas canvasMap)
-            {
-                //this.location = location;
-                //this.GroundIndex = GroundIndex;
-                this.cell = cell;
-                this.towerManager = towerManager;
-                this.canvasMap = canvasMap;
+                var button = sender as Button;
+                var tag = button.Tag as Cell;
+                isSingleAddTower = true;
+                AddTower addTower = new AddTower(tag, towerManager, CanvasMap, player, this);
+                addTower.Show();
             }
         }
-
         /************************************************/
 
         private void LoadWaypoints()
@@ -239,8 +228,6 @@ namespace WpfTowerDefence
             }
         }
 
-        
-
         public void Window_Closed(object sender, EventArgs e)
         {
             startWindow.Visibility = Visibility.Visible;
@@ -248,10 +235,11 @@ namespace WpfTowerDefence
             this.Close();
 
             waveManager.StopWaveSpawner();
-            //towerManager.DeactivateTowers();
+            towerManager.DeactivateTowers();
+            player.timerPlayerStop();
 
-            cancellationTokenSource.Cancel();
-            cancellationTokenSource.Dispose();
+            //cancellationTokenSource.Cancel();
+            //cancellationTokenSource.Dispose();
         }
 
     }

@@ -1,81 +1,67 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Media;
+using WpfTowerDefence.Enemies;
+using WpfTowerDefence.Enums;
 
 namespace WpfTowerDefence
 {
     class WaveSpawn : Canvas
     {
-        public int waveNumber;
+        public int WaveNumber { get; private set; }
         public List<Cell> WayPoints { get; private set; }
         public Canvas CanvasMap { get; private set; }
         public int EnemyCount { get; private set; }
-        Game xamlGame;
+        Enemy enemyToAdd;
+        Array values = Enum.GetNames(typeof(EnemyType));
+        Random random = new Random();
 
-        int CreepInterval = 1000;
-        public List<Enemy> enemies = new List<Enemy>();
-        Timer timer;
-        Enemy enemy;
+        public delegate void MethodContainer(Enemy enemy);
+        public event MethodContainer onCount;
 
-        System.Windows.Threading.DispatcherTimer DT;
-
-        public WaveSpawn(List<Cell> wayPoints, Canvas canvasMap, int enemyCount, int waveNumber, Game xamlGame, Timer timer)
+        public WaveSpawn(List<Cell> wayPoints, Canvas canvasMap, int enemyCount, int waveNumber)
         {
             WayPoints = wayPoints;
             CanvasMap = canvasMap;
             EnemyCount = enemyCount;
-            this.waveNumber = waveNumber;
-            this.xamlGame = xamlGame;
-            this.timer = timer;
+            WaveNumber = waveNumber;
         }
 
         public async void GenerateEnemiesWave()
         {
-            Timer timerMoveEnemies = new Timer(MoveEnemeis, null, Timeout.Infinite, Timeout.Infinite);
-
-                for (int i = 0; i < EnemyCount; i++)
+            for (int i = 0; i < EnemyCount; i++)
             {
+                int randomEnemyType = random.Next(values.Length);
+                string randomEnemy = values.GetValue(randomEnemyType).ToString();
+
                 Application.Current.Dispatcher.Invoke((Action)(() =>
                 {
-                    enemy = new Enemy(WayPoints, CanvasMap);
-                    enemies.Add(enemy);
-                    timerMoveEnemies.Change(0, Timeout.Infinite);
+                    switch (randomEnemy)
+                    {
+                        case "OrkEnemy":
+                            {
+                                enemyToAdd = new OrkEnemy(WayPoints, CanvasMap);
+                                break;
+                            }
+                        case "AssassinEnemy":
+                            {
+                                enemyToAdd = new AssassinEnemy(WayPoints, CanvasMap);
+                                break;
+                            }
+                        case "DwarfEnemy":
+                            {
+                                enemyToAdd = new DwarfEnemy(WayPoints, CanvasMap);
+                                break;
+                            }
+                    }
                 }));
+
+                onCount?.Invoke(enemyToAdd);
                 await Task.Delay(1000);
             }
-            timerMoveEnemies.Change(0, CreepInterval);
-
-            //TODO: Проверить необходимость и работоспособность Dispose
-            if (enemies.Count == 0)
-            {
-                //timerMoveEnemies.Dispose();
-            }
         }
 
-
-        public void MoveEnemeis(Object obj)
-        {
-            if (waveNumber == 5 && enemies.Count == 0)
-            {
-                timer.Change(Timeout.Infinite, Timeout.Infinite);
-                //timer.Dispose();
-                xamlGame.resultGame = "Вы победили!";
-                xamlGame.Dispatcher.BeginInvoke((Action)(() => { xamlGame.Close(); }));
-                //You WIN!
-            }
-            else
-            {
-                for (int i = 0; i < enemies.Count; i++)
-                {
-                    enemies[i].Update(xamlGame, timer);
-                }
-            }
-        }
     }
 }

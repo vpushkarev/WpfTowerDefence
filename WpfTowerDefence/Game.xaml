@@ -5,7 +5,9 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:WpfTowerDefence"
         mc:Ignorable="d"
-        Title="Game" Height="353.153" Width="481.088" Loaded="Window_Loaded" Closed="Window_Closed">
+        Title="Game" Height="353.153" Width="553.342" Loaded="Window_Loaded" Closed="Window_Closed">
     <Canvas x:Name="CanvasMap">
+        <Label x:Name="MoneyLabel" Height="32" Width="61" Canvas.Left="484" Canvas.Top="20" FontSize="15" Background="#FFB6A1B2" HorizontalContentAlignment="Center"/>
+        <TextBox x:Name="textBox" Height="20" Canvas.Left="484" TextWrapping="Wrap" Text="Money" Width="61" FontWeight="Bold" TextAlignment="Center" Background="#FFB6A1B2" BorderThickness="0"/>
     </Canvas>
 </Window>

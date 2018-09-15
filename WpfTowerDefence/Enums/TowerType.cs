@@ -1,19 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.ComponentModel;
 
 namespace WpfTowerDefence.Enums
 {
     public enum TowerType
     {
-        [Description("Лучник")]
+        [Description("Лучник     Стоимость: 10")]
         ArcherTower,
-        [Description("Катапульта")]
+        [Description("Катапульта Стоимость: 15")]
         CatapultTower,
-        [Description("Требушет")]
+        [Description("Требушет   Стоимость: 20")]
         TrebuchetTower
     }
 }

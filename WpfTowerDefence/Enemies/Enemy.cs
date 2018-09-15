@@ -1,40 +1,36 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
+using System.Windows.Threading;
 
 namespace WpfTowerDefence
 {
-    class Enemy : UserControl
+    public class Enemy
     {
-        public SolidColorBrush colorNorm { get; } = Brushes.Fuchsia;
-        public SolidColorBrush colorHit { get; } = Brushes.Firebrick;
-        protected int startHealth = 4;
-        protected int killCost = 1;
+        public SolidColorBrush ColorNormal { get; private set; }
+        public SolidColorBrush ColorHit { get; } = Brushes.Firebrick;
+        protected int StartHealth { get; private set; }
+        public int KillCost { get; private set; }
         public int CurrentHealth { get; private set; }
         public bool IsKilled => CurrentHealth <= 0;
-        List<Cell> wayPoints = new List<Cell>();
+        List<Cell> wayPoints;
         public Cell CurrWayPoint { get; private set; }
         public int WayIndex { get; private set; } = 0; //Step number
-        //double tmpWayIndex = 0; //use for speed
+        //double tmpWayIndex = 0;
         //float speed = 1.0f;
-
-        Canvas canvasMap;
         public Label EnemyLable { get; private set; }
 
-
-        public Enemy(List<Cell> wayPoints, Canvas canvasMap)
+        public Enemy(List<Cell> wayPoints, Canvas canvasMap, SolidColorBrush colorNorm, int startHealth, int killCost)
         {
+            StartHealth = startHealth;
+            ColorNormal = colorNorm;
             this.wayPoints = wayPoints;
-            canvasMap = canvasMap;
             EnemyLable = CreateEnemyLable(new Point(wayPoints[WayIndex].X, wayPoints[WayIndex].Y), colorNorm);
             canvasMap.Children.Add(EnemyLable);
             CurrentHealth = startHealth;
+            KillCost = killCost;
         }
 
         private Label CreateEnemyLable(Point point, Brush brush)
@@ -49,22 +45,20 @@ namespace WpfTowerDefence
             return cell;
         }
 
-        public void Update(Game xamlGame, Timer timer)
+        public void Update(Game windowGame, DispatcherTimer timer)
         {
-            Move(xamlGame, timer);
+            Move(windowGame, timer);
         }
 
-        private void Move(Game xamlGame, Timer timer)
+        private void Move(Game windowGame, DispatcherTimer timer)
         {
             if (WayIndex == wayPoints.Count - 1)
             {
                 Application.Current.Dispatcher.Invoke((Action)(() =>
                 {
-                    timer.Change(Timeout.Infinite, Timeout.Infinite);
-                    //timer.Dispose();
-                    xamlGame.resultGame="Вы проиграли!";
-                    xamlGame.Close();
-                    //You Louser!
+                    timer.Stop();
+                    windowGame.resultGame = "Вы проиграли!";
+                    windowGame.Close();
                 }));
             }
             else
@@ -79,11 +73,10 @@ namespace WpfTowerDefence
                 else
                 {
                     WayIndex++;
-                    //tmpWayIndex = tmpWayIndex + speed;
+                    //tmpWayIndex += speed;
                     //WayIndex = (int)Math.Floor(tmpWayIndex);
 
                     CurrWayPoint = wayPoints[WayIndex];
-
                     int left = (int)CurrWayPoint.X;
                     int top = (int)CurrWayPoint.Y;
 

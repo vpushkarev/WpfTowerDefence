@@ -8,7 +8,7 @@
         xmlns:converters="clr-namespace:WpfTowerDefence.Converters"
         xmlns:sys="clr-namespace:System;assembly=mscorlib"
         mc:Ignorable="d"
-        Title="Покупка союзника" Height="300" Width="300">
+        Title="Покупка союзника" Height="300" Width="300" Closing="Window_Closing">
     <Window.Resources>
         <ObjectDataProvider x:Key="TowerFromEnum" MethodName="GetValues"
                         ObjectType="{x:Type sys:Enum}">
@@ -19,16 +19,20 @@
         <converters:EnumDescriptionConverter x:Key="EnumDescriptionConverter"/>
     </Window.Resources>
     <Grid>
-        <StackPanel HorizontalAlignment="Left" Height="269" VerticalAlignment="Top" Width="292">
-            <ListBox x:Name="towerType_listBox" Height="157" ItemsSource="{Binding Source={StaticResource TowerFromEnum}}">
-            <ListBox.ItemTemplate>
-                <DataTemplate>
+        <Grid.RowDefinitions>
+            <RowDefinition/>
+            <RowDefinition Height="25"/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+        <ListBox Grid.Row="0" x:Name="towerType_listBox" Height="99" ItemsSource="{Binding Source={StaticResource TowerFromEnum}}" FontSize="14" SelectedIndex="0">
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
                         <TextBlock Text="{Binding Converter={StaticResource EnumDescriptionConverter}}"/>
                     </DataTemplate>
-            </ListBox.ItemTemplate>
+                </ListBox.ItemTemplate>
             </ListBox>
-            <Button x:Name="button" Content="Купить союзника" RenderTransformOrigin="0.507,3.633" Margin="90,0,90,0" Click="button_Click"/>
-        </StackPanel>
-
+            <Button Grid.Row="1" x:Name="buyButton" Width="130" Content="Купить союзника" Click="buyButton_Click"  FontSize="15" HorizontalAlignment="Center" />
+            <!--<Button Grid.Row="1" x:Name="upgradeButton" Width="130" Content="Повысить уровень" HorizontalAlignment="Right" Click="upgradeButton_Click"/>-->
+        <TextBox Grid.Row="2" x:Name="errorTextBox" HorizontalAlignment="Center" Height="70" TextWrapping="Wrap" Width="216" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="14"/>
     </Grid>
 </Window>

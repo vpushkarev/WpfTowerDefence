@@ -59,6 +59,10 @@
       <DependentUpon>AddTower.xaml</DependentUpon>
     </Compile>
     <Compile Include="Converters\EnumDescriptionConverter.cs" />
+    <Compile Include="Enemies\AssassinEnemy.cs" />
+    <Compile Include="Enemies\DwarfEnemy.cs" />
+    <Compile Include="Enemies\OrkEnemy.cs" />
+    <Compile Include="Enums\EnemyType.cs" />
     <Compile Include="Enums\TowerType.cs" />
     <Compile Include="Towers\ArcherTower.cs" />
     <Compile Include="Towers\CatapultTower.cs" />
@@ -66,6 +70,9 @@
     <Compile Include="Towers\Tower.cs" />
     <Compile Include="TowerManager.cs" />
     <Compile Include="Towers\TrebuchetTower.cs" />
+    <Compile Include="UpgradeTower.xaml.cs">
+      <DependentUpon>UpgradeTower.xaml</DependentUpon>
+    </Compile>
     <Compile Include="WaveManager.cs" />
     <Page Include="AddTower.xaml">
       <SubType>Designer</SubType>
@@ -84,7 +91,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Cell.cs" />
-    <Compile Include="Enemy.cs" />
+    <Compile Include="Enemies\Enemy.cs" />
     <Compile Include="WaveSpawn.cs" />
     <Compile Include="Game.xaml.cs">
       <DependentUpon>Game.xaml</DependentUpon>
@@ -93,6 +100,10 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Page Include="UpgradeTower.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs">

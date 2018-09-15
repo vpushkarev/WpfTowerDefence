@@ -1,29 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
-using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Threading;
 
 namespace WpfTowerDefence
 {
     class TowerManager : Canvas
     {
+        int towerFireSpeed = 1000;
         WaveManager waveManager;
-        Canvas canvasMap;
-        Cell[,] allCells;
         List<WaveSpawn> wavesSpawn = new List<WaveSpawn>();
         List<Tower> towers = new List<Tower>();
-        Timer timer;
-        int towerFireSpeed = 1000;
+        DispatcherTimer timer;
 
-        public TowerManager(WaveManager waveManager, Canvas canvasMap, Cell[,] allCells, List<WaveSpawn> wavesSpawn)
+        public TowerManager(WaveManager waveManager, List<WaveSpawn> wavesSpawn)
         {
             this.waveManager = waveManager;
-            this.canvasMap = canvasMap;
-            this.allCells = allCells;
             this.wavesSpawn = wavesSpawn;
         }
 
@@ -37,36 +29,37 @@ namespace WpfTowerDefence
 
         public void ActivateTowers()
         {
-            timer = new Timer(FireOnEnemies, towers, 0, towerFireSpeed);
+            timerTowerStart();
         }
 
-        public void FireOnEnemies(Object obj)
+        public void FireOnEnemies(Object obj, EventArgs e)
         {
-            List<Tower> towers = (List<Tower>)obj;
             foreach (var tower in towers)
             {
-                if (wavesSpawn != null)
+                if (wavesSpawn.Count>0)
                 {
-                    tower.FindTarget(wavesSpawn);
+                    tower.FindTarget(waveManager.enemies);
                     tower.FireByTarget(tower);
                 }
 
                 if (tower.Target != null && tower.Target.IsKilled)
                 {
-                    var wave = wavesSpawn.FirstOrDefault(k => k.enemies.Contains(tower.Target));
-                    if (wave != null)
-                    {
-                        wavesSpawn[wave.waveNumber - 1].enemies.Remove(tower.Target);
-                    }
+                    waveManager.enemies.Remove(tower.Target);
                 }
             }
         }
 
+        private void timerTowerStart()
+        {
+            timer = new DispatcherTimer();
+            timer.Tick += new EventHandler(FireOnEnemies);
+            timer.Interval = new TimeSpan(0, 0, 0, 0, towerFireSpeed);
+            timer.Start();
+        }
+
         public void DeactivateTowers()
         {
-            timer.Change(Timeout.Infinite, Timeout.Infinite);
-            //Thread.Sleep(2000);
-            //timer.Dispose();
+            timer.Stop();
         }
 
     }

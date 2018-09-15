@@ -1,19 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Controls;
+﻿using System.Windows.Controls;
+using System.Windows.Media;
 
 namespace WpfTowerDefence
 {
     class CatapultTower : Tower
     {
-        public CatapultTower(Cell location, Canvas canvasMap) : base(location, canvasMap)
+        static SolidColorBrush colorNorm = Brushes.RoyalBlue;
+        public static int price = 15;
+        public CatapultTower(Cell location, Canvas canvasMap, Player player) : base(location, canvasMap, colorNorm, price, player)
         {
-            range = 2;
-            power = 2;
-            price = 20;
+            this.range = 2;
+            this.power = 2;
         }
     }
 }

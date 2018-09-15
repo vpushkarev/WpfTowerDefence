@@ -1,21 +1,14 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Controls;
 
 namespace WpfTowerDefence
 {
     public class Cell : UserControl
     {
-        public int X { get; set; }
-        public int Y { get;set;}
-
-        public Button cellButton;
+        public int X { get; private set; }
+        public int Y { get; private set; }
         public int state; /*0 - Ground; 1- Path; 2 - Tower*/
-
         public bool isGround => state == 0;
 
         public Cell(int x, int y)

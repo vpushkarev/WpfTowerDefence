@@ -1,0 +1,17 @@
+﻿<Window x:Class="WpfTowerDefence.UpgradeTower"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:WpfTowerDefence"
+        mc:Ignorable="d"
+        Title="UpgradeTower" Height="149.575" Width="316.147" Closing="Window_Closing">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition/>
+            <RowDefinition Height="25"/>
+        </Grid.RowDefinitions>
+        <TextBox Grid.Row="0" x:Name="upgradeTextBox" HorizontalAlignment="Center" Height="70" TextWrapping="Wrap" Width="216" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="16"/>
+        <Button Grid.Row="1" x:Name="upgradeButton" Width="130" Content="Повысить уровень" HorizontalAlignment="Center" Click="upgradeButton_Click"/>
+    </Grid>
+</Window>
