@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -30,8 +31,8 @@ namespace WpfTowerDefence
         };
 
         Cell firstCell;
-        static int fieldHeight = 6, fieldWight = 9;
-        Cell[,] allCells = new Cell[fieldHeight, fieldWight];
+        static int fieldHeight = 6, fieldWidth = 9;
+        Cell[,] allCells = new Cell[fieldHeight, fieldWidth];
         List<Cell> wayPoints = new List<Cell>();
         int currWayX, currWayY;
         DispatcherTimer timer;
@@ -39,7 +40,7 @@ namespace WpfTowerDefence
         public bool isSingleAddTower = false;
 
         //CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
-        //Thread playerThread;
+        Thread playerThread;
         //Thread unitsThread;
 
         public Game(Window startWindow)
@@ -57,16 +58,13 @@ namespace WpfTowerDefence
             waveManager = new WaveManager(wayPoints, CanvasMap, this);
             towerManager = new TowerManager(waveManager, waveManager.WavesSpawn);
 
-            //playerThread = new Thread(() =>
-            //{
-                player.timerPlayerStart();
-                Application.Current.Dispatcher.Invoke((Action)(() =>
-                {
-                    MoneyLabel.Content = player.Money;
-                }));
-                player.onCount += ChangedMoney_onCount;
-            //});
-            //playerThread.Start();
+            MoneyLabel.Content = player.Money;
+            player.OnCount += ChangedMoney_onCount;
+            playerThread = new Thread(() =>
+            {
+                player.TimerPlayerStart();
+            });
+            playerThread.Start();
 
             waveManager.StartWaveSpawner();
             towerManager.ActivateTowers();
@@ -80,7 +78,8 @@ namespace WpfTowerDefence
 
         private void ChangedMoney_onCount(double money)
         {
-            MoneyLabel.Content = money; ;
+            Action action = () => { MoneyLabel.Content = money; };
+            Application.Current.Dispatcher.Invoke(action);
         }
 
         //private Task TestAsync(CancellationToken token)
@@ -120,11 +119,11 @@ namespace WpfTowerDefence
         private void CreateLevel()
         {
             for (int i = 0; i < fieldHeight; i++)
-                for (int k = 0; k < fieldWight; k++)
+                for (int k = 0; k < fieldWidth; k++)
                 {
-                    int GroundIndex = int.Parse(path[i].ToCharArray()[k].ToString());
-                    var color = (GroundIndex == 0) ? Brushes.Brown : Brushes.Gray;
-                    CreateCell(color, GroundIndex, k, i);
+                    int groundIndex = int.Parse(path[i].ToCharArray()[k].ToString());
+                    var color = (groundIndex == 0) ? Brushes.Brown : Brushes.Gray;
+                    CreateCell(color, groundIndex, k, i);
                 }
         }
 
@@ -157,7 +156,7 @@ namespace WpfTowerDefence
             Canvas.SetTop(button, point.Y);
             if (GroundIndex == 1)
             {
-                // button.IsEnabled = false;
+                button.IsEnabled = false;
             }
             else
             {
@@ -190,39 +189,35 @@ namespace WpfTowerDefence
             {
                 currWayGo = null;
 
-                if (currWayX > 0 && !allCells[currWayY, currWayX - 1].isGround &&
-                    !wayPoints.Exists(x => x == allCells[currWayY, currWayX - 1]))
+                int[] x = new int[4] { -1, 1, 0, 0 };
+                int[] y = new int[4] { 0, 0, -1, 1 };
+                bool wayFound = false;
+                for (int i = 0; i < x.Length; ++i)
                 {
-                    currWayGo = allCells[currWayY, currWayX - 1];
-                    currWayX--;
-                    Debug.WriteLine("Next Cell is Left");
+                    int offsetX = currWayX + x[i];
+                    int offsetY = currWayY + y[i];
+
+                    if (offsetX < 0 || offsetX >= fieldWidth || offsetY < 0 || offsetY >= fieldHeight)
+                    {
+                        continue;
+                    }
+
+                    if (!allCells[offsetY, offsetX].isGround && !wayPoints.Exists(t => t == allCells[offsetY, offsetX]))
+                    {
+                        currWayGo = allCells[offsetY, offsetX];
+                        currWayX += x[i];
+                        currWayY += y[i];
+                        Debug.WriteLine($"Move ({x[i]}, {y[i]}).");
+                        wayFound = true;
+
+                        break;
+                    }
                 }
-                else if (currWayX < (fieldWight - 1) && !allCells[currWayY, currWayX + 1].isGround &&
-                    !wayPoints.Exists(x => x == allCells[currWayY, currWayX + 1]))
+
+                if (!wayFound)
                 {
-                    currWayGo = allCells[currWayY, currWayX + 1];
-                    currWayX++;
-                    Debug.WriteLine("Next Cell is Right");
-                }
-                else if (currWayY > 0 && !allCells[currWayY - 1, currWayX].isGround &&
-                    !wayPoints.Exists(x => x == allCells[currWayY - 1, currWayX]))
-                {
-                    currWayGo = allCells[currWayY - 1, currWayX];
-                    currWayY--;
-                    Debug.WriteLine("Next Cell is Up");
-                }
-                else if (currWayY < (fieldHeight - 1) && !allCells[currWayY + 1, currWayX].isGround &&
-                    !wayPoints.Exists(x => x == allCells[currWayY + 1, currWayX]))
-                {
-                    currWayGo = allCells[currWayY + 1, currWayX];
-                    currWayY++;
-                    Debug.WriteLine("Next Cell is Down");
-                }
-                else
-                {
-                    Debug.WriteLine("End way");
                     break;
-                }
+                }   
 
                 wayPoints.Add(currWayGo);
             }
@@ -236,7 +231,7 @@ namespace WpfTowerDefence
 
             waveManager.StopWaveSpawner();
             towerManager.DeactivateTowers();
-            player.timerPlayerStop();
+            player.TimerPlayerStop();
 
             //cancellationTokenSource.Cancel();
             //cancellationTokenSource.Dispose();

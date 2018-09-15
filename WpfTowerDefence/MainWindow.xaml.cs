@@ -14,7 +14,7 @@ namespace WpfTowerDefence
         public string Result
         {
             get { return resultLabel.Content.ToString(); }
-            set { Dispatcher.Invoke(new Action(() => { resultLabel.Content = value; })); }
+            set { /*Dispatcher.Invoke(new Action(() => {*/ resultLabel.Content = value; /*}));*/ }
         }
 
         public MainWindow()

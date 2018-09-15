@@ -43,40 +43,40 @@ namespace WpfTowerDefence
             }
 
             var selectedTowerType = towerType_listBox.SelectedItem.ToString();
-            if (selectedTowerType != null && towerManager != null && cell.isGround)
+            if (!string.IsNullOrEmpty(selectedTowerType) && towerManager != null && cell.isGround)
             {
                 switch (selectedTowerType)
                 {
                     case "ArcherTower":
                         {
-                            towerToAdd = (player.Money >= ArcherTower.price) ? new ArcherTower(cell, canvasMap, player) : null;
+                            towerToAdd = new ArcherTower(cell, canvasMap, player);
                             break;
                         }
                     case "CatapultTower":
                         {
-                            towerToAdd = (player.Money >= CatapultTower.price) ? new CatapultTower(cell, canvasMap, player) : null;
+                            towerToAdd = new CatapultTower(cell, canvasMap, player);
                             break;
                         }
                     case "TrebuchetTower":
                         {
-                            towerToAdd = (player.Money >= TrebuchetTower.price) ? new TrebuchetTower(cell, canvasMap, player) : null;
+                            towerToAdd = new TrebuchetTower(cell, canvasMap, player);
                             break;
                         }
                 }
 
-                if (towerToAdd == null)
-                {
+                if(player.Money < towerToAdd.Price)
+                { 
                     errorTextBox.Text = "Недостаточно денег для покупки этой башни.";
                 }
                 else
                 {
                     errorTextBox.Text = "";
-                    player.Money -= towerToAdd.Price;
+                    player.AddMoney(-towerToAdd.Price);
                     towerToAdd.onCount += KillCost_onCount;
-                    Application.Current.Dispatcher.Invoke((Action)(() =>
-                    {
+                    //Application.Current.Dispatcher.Invoke((Action)(() =>
+                    //{
                         towerManager.AddTower(towerToAdd);
-                    }));
+                    //}));
                     cell.state = 2;
                 }
             }
@@ -84,7 +84,7 @@ namespace WpfTowerDefence
 
         private void KillCost_onCount(int killCost)
         {
-            player.Money += killCost;
+            player.AddMoney(killCost);
         }
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)

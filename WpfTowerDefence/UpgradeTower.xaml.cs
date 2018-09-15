@@ -30,7 +30,7 @@ namespace WpfTowerDefence
         {
             if (player.Money >= tower.upgradeCost)
             {
-                player.Money -= tower.upgradeCost;
+                player.AddMoney(-tower.upgradeCost);
                 tower.Upgrade();
                 Debug.WriteLine("Upgrade done.");
                 this.Close();

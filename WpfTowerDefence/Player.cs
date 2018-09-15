@@ -1,39 +1,42 @@
 ﻿using System;
 using System.Diagnostics;
-using System.Windows.Threading;
+using System.Threading;
 
 namespace WpfTowerDefence
 {
     public class Player
     {
-        DispatcherTimer timer;
-        private double _money = 10;
-        public delegate void MethodContainer(double money);
-        public event MethodContainer onCount;
+        Timer timer;
+
+        // Деньги изменяются из потока пользовательского интерфейса, как показано в методе AddTower, 
+        //  и из таймера.Кажется, сначала он должен быть помечен как "volatile", а объект 
+        //игрока должен быть заблокирован при выполнении изменений денег?
+        private volatile double _money = 10;
+        public event Action<double> OnCount;
 
         public double Money
         {
-            get { return _money; }
-            set { _money = value; onCount?.Invoke(Money); }
+            get
+            {
+                return _money;
+            }
         }
 
-        public void timerPlayerStart()
+        public void TimerPlayerStart()
         {
-            timer = new DispatcherTimer();
-            timer.Tick += new EventHandler(AddingMoney);
-            timer.Interval = new TimeSpan(0, 0, 0, 1, 0);
-            timer.Start();
+            timer = new Timer(AddMoney, null, 0, 1000);
         }
 
-        void AddingMoney(object sender, EventArgs e)
+        public void AddMoney(object sender)
         {
-            Money += 0.5;
-            Debug.WriteLine("Money{0}", Money);
+            _money += 0.5;
+            OnCount?.Invoke(_money);
+            Debug.WriteLine("Money{0}", _money);
         }
 
-        internal void timerPlayerStop()
+        internal void TimerPlayerStop()
         {
-            timer.Stop();
+            timer.Change(Timeout.Infinite, Timeout.Infinite);
         }
 
     }

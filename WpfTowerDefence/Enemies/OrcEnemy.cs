@@ -4,13 +4,13 @@ using System.Windows.Media;
 
 namespace WpfTowerDefence.Enemies
 {
-    class OrkEnemy : Enemy
+    class OrcEnemy : Enemy
     {
         static SolidColorBrush colorNormal = Brushes.PapayaWhip;
-        static int startHealth = 4;
+        static int startHealth = 4; //entity configuration and passed to its ctor.
         static int killCost = 3;
 
-        public OrkEnemy(List<Cell> wayPoints, Canvas canvasMap) : base (wayPoints, canvasMap, colorNormal, startHealth, killCost)
+        public OrcEnemy(List<Cell> wayPoints, Canvas canvasMap) : base (wayPoints, canvasMap, colorNormal, startHealth, killCost)
         {
         }
     }

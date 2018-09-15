@@ -42,7 +42,7 @@ namespace WpfTowerDefence
                     {
                         case "OrkEnemy":
                             {
-                                enemyToAdd = new OrkEnemy(WayPoints, CanvasMap);
+                                enemyToAdd = new OrcEnemy(WayPoints, CanvasMap);
                                 break;
                             }
                         case "AssassinEnemy":

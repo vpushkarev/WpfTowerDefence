@@ -61,7 +61,7 @@
     <Compile Include="Converters\EnumDescriptionConverter.cs" />
     <Compile Include="Enemies\AssassinEnemy.cs" />
     <Compile Include="Enemies\DwarfEnemy.cs" />
-    <Compile Include="Enemies\OrkEnemy.cs" />
+    <Compile Include="Enemies\OrcEnemy.cs" />
     <Compile Include="Enums\EnemyType.cs" />
     <Compile Include="Enums\TowerType.cs" />
     <Compile Include="Towers\ArcherTower.cs" />
