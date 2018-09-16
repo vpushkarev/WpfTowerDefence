@@ -18,8 +18,6 @@ namespace WpfTowerDefence
         List<Cell> wayPoints;
         public Cell CurrWayPoint { get; private set; }
         public int WayIndex { get; private set; } = 0; //Step number
-        //double tmpWayIndex = 0;
-        //float speed = 1.0f;
         public Label EnemyLable { get; private set; }
 
         public Enemy(List<Cell> wayPoints, Canvas canvasMap, SolidColorBrush colorNorm, int startHealth, int killCost)
@@ -73,9 +71,6 @@ namespace WpfTowerDefence
                 else
                 {
                     WayIndex++;
-                    //tmpWayIndex += speed;
-                    //WayIndex = (int)Math.Floor(tmpWayIndex);
-
                     CurrWayPoint = wayPoints[WayIndex];
                     int left = (int)CurrWayPoint.X;
                     int top = (int)CurrWayPoint.Y;

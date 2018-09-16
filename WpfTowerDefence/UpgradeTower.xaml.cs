@@ -37,7 +37,7 @@ namespace WpfTowerDefence
             }
             else
             {
-                upgradeTextBox.Text = "Недостаточно денег для повышения уровня этого союзника.";
+                upgradeTextBox.Text += "\n Недостаточно денег для повышения уровня этого союзника.";
             }
         }
 

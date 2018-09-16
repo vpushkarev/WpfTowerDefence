@@ -8,30 +8,28 @@ namespace WpfTowerDefence
     {
         Timer timer;
 
-        // Деньги изменяются из потока пользовательского интерфейса, как показано в методе AddTower, 
-        //  и из таймера.Кажется, сначала он должен быть помечен как "volatile", а объект 
-        //игрока должен быть заблокирован при выполнении изменений денег?
-        private volatile double _money = 10;
         public event Action<double> OnCount;
+        private static object _lock = new object();
 
-        public double Money
-        {
-            get
-            {
-                return _money;
-            }
-        }
+        public double Money { get; private set; } = 10;
 
         public void TimerPlayerStart()
         {
-            timer = new Timer(AddMoney, null, 0, 1000);
+            timer = new Timer(AddMoney, 0.5, 0, 1000);
         }
 
         public void AddMoney(object sender)
         {
-            _money += 0.5;
-            OnCount?.Invoke(_money);
-            Debug.WriteLine("Money{0}", _money);
+            lock (_lock)
+            {
+                if (sender is IConvertible)
+                {
+                    Money += ((IConvertible)sender).ToDouble(null);
+                }
+            }
+            OnCount?.Invoke(Money);
+            Debug.WriteLine("Money{0}", Money);
+            
         }
 
         internal void TimerPlayerStop()

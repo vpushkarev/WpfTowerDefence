@@ -64,19 +64,17 @@ namespace WpfTowerDefence
                         }
                 }
 
-                if(player.Money < towerToAdd.Price)
-                { 
+                if (player.Money < towerToAdd.Price)
+                {
                     errorTextBox.Text = "Недостаточно денег для покупки этой башни.";
                 }
                 else
                 {
                     errorTextBox.Text = "";
-                    player.AddMoney(-towerToAdd.Price);
                     towerToAdd.onCount += KillCost_onCount;
-                    //Application.Current.Dispatcher.Invoke((Action)(() =>
-                    //{
-                        towerManager.AddTower(towerToAdd);
-                    //}));
+
+                    player.AddMoney(-towerToAdd.Price);
+                    towerManager.AddTower(towerToAdd);
                     cell.state = 2;
                 }
             }

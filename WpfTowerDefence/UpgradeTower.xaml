@@ -11,7 +11,7 @@
             <RowDefinition/>
             <RowDefinition Height="25"/>
         </Grid.RowDefinitions>
-        <TextBox Grid.Row="0" x:Name="upgradeTextBox" HorizontalAlignment="Center" Height="70" TextWrapping="Wrap" Width="216" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="16"/>
+        <TextBox Grid.Row="0" x:Name="upgradeTextBox" HorizontalAlignment="Center" TextWrapping="Wrap" Width="288" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="12" Margin="10,10,10,5"/>
         <Button Grid.Row="1" x:Name="upgradeButton" Width="130" Content="Повысить уровень" HorizontalAlignment="Center" Click="upgradeButton_Click"/>
     </Grid>
 </Window>

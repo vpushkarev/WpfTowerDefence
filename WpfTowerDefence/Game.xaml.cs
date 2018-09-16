@@ -39,9 +39,8 @@ namespace WpfTowerDefence
         int EnemyInterval = 1000;
         public bool isSingleAddTower = false;
 
-        //CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
         Thread playerThread;
-        //Thread unitsThread;
+        Thread towersThread;
 
         public Game(Window startWindow)
         {
@@ -51,7 +50,6 @@ namespace WpfTowerDefence
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            //CancellationToken token = cancellationTokenSource.Token;
             CreateLevel();
             LoadWaypoints();
             player = new Player();
@@ -60,20 +58,21 @@ namespace WpfTowerDefence
 
             MoneyLabel.Content = player.Money;
             player.OnCount += ChangedMoney_onCount;
+
             playerThread = new Thread(() =>
             {
                 player.TimerPlayerStart();
             });
             playerThread.Start();
 
+            towersThread = new Thread(() =>
+            {
+                towerManager.ActivateTowers();
+            });
+            towersThread.Start();
+
             waveManager.StartWaveSpawner();
-            towerManager.ActivateTowers();
             timerEnemiesStart();
-
-            //var task = new Thread(async () => await TestAsync(token));
-            //task.Start();
-
-            //await TestAsync();
         }
 
         private void ChangedMoney_onCount(double money)
@@ -81,16 +80,6 @@ namespace WpfTowerDefence
             Action action = () => { MoneyLabel.Content = money; };
             Application.Current.Dispatcher.Invoke(action);
         }
-
-        //private Task TestAsync(CancellationToken token)
-        //{
-        //    return Task.Factory.StartNew(() => DT_Tick(new Object(), token));
-        //}
-
-        //void DT_Tick(object obj, CancellationToken token)
-        //{
-        //    player.timerPlayerStart();
-        //}
 
         private void timerEnemiesStart()
         {
