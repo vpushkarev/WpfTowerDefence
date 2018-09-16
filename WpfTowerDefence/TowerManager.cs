@@ -12,7 +12,6 @@ namespace WpfTowerDefence
         WaveManager waveManager;
         List<WaveSpawn> wavesSpawn = new List<WaveSpawn>();
         List<Tower> towers = new List<Tower>();
-       // DispatcherTimer timer;
         Timer timer;
 
         public TowerManager(WaveManager waveManager, List<WaveSpawn> wavesSpawn)
@@ -34,14 +33,14 @@ namespace WpfTowerDefence
             timerTowerStart();
         }
 
-        public void FireOnEnemies(Object obj/*, EventArgs e*/)
+        public void FireOnEnemies(Object obj)
         {
             foreach (var tower in towers)
             {
                 if (wavesSpawn.Count>0)
                 {
                     tower.FindTarget(waveManager.enemies);
-                    tower.FireByTarget(tower);
+                    tower.FireByTarget();
                 }
 
                 if (tower.Target != null && tower.Target.IsKilled)
@@ -54,16 +53,11 @@ namespace WpfTowerDefence
         private void timerTowerStart()
         {
             timer = new Timer(FireOnEnemies, null, 0, towerFireSpeed);
-            //timer = new DispatcherTimer();
-            //timer.Tick += new EventHandler(FireOnEnemies);
-            //timer.Interval = new TimeSpan(0, 0, 0, 0, towerFireSpeed);
-            //timer.Start();
         }
 
         public void DeactivateTowers()
         {
             timer.Change(Timeout.Infinite, Timeout.Infinite);
-            //timer.Stop();
         }
 
     }

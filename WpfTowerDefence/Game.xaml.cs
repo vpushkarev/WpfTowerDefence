@@ -51,7 +51,7 @@ namespace WpfTowerDefence
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             CreateLevel();
-            LoadWaypoints();
+            wayPoints = LoadWaypoints(allCells, firstCell, fieldWidth, fieldHeight, currWayX, currWayY);
             player = new Player();
             waveManager = new WaveManager(wayPoints, CanvasMap, this);
             towerManager = new TowerManager(waveManager, waveManager.WavesSpawn);
@@ -169,8 +169,9 @@ namespace WpfTowerDefence
         }
         /************************************************/
 
-        private void LoadWaypoints()
+        public List<Cell> LoadWaypoints(Cell[,] allCells, Cell firstCell, int fieldWidth, int fieldHeight, int currWayX, int currWayY)
         {
+            List<Cell> wayPoints = new List<Cell>();
             Cell currWayGo;
             wayPoints.Add(firstCell);
 
@@ -210,6 +211,7 @@ namespace WpfTowerDefence
 
                 wayPoints.Add(currWayGo);
             }
+            return wayPoints;
         }
 
         public void Window_Closed(object sender, EventArgs e)

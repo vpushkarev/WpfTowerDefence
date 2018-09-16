@@ -16,7 +16,7 @@ namespace WpfTowerDefence
         public int CurrentHealth { get; private set; }
         public bool IsKilled => CurrentHealth <= 0;
         List<Cell> wayPoints;
-        public Cell CurrWayPoint { get; private set; }
+        public Cell CurrWayPoint { get; /*private*/ set; }
         public int WayIndex { get; private set; } = 0; //Step number
         public Label EnemyLable { get; private set; }
 
@@ -30,6 +30,18 @@ namespace WpfTowerDefence
             CurrentHealth = startHealth;
             KillCost = killCost;
         }
+
+        //For Unit test
+        public Enemy(List<Cell> wayPoints, int startHealth, int killCost, Cell currWayPoint)
+        {
+            StartHealth = startHealth;
+            this.wayPoints = wayPoints;
+            CurrentHealth = startHealth;
+            KillCost = killCost;
+            CurrWayPoint = currWayPoint;
+            EnemyLable = CreateEnemyLable(new Point(wayPoints[WayIndex].X, wayPoints[WayIndex].Y), Brushes.Firebrick);
+        }
+        /////////////////////////////////
 
         private Label CreateEnemyLable(Point point, Brush brush)
         {

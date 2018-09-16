@@ -3,7 +3,7 @@ using System.Windows.Media;
 
 namespace WpfTowerDefence
 {
-    class ArcherTower : Tower
+    public class ArcherTower : Tower
     {
         static SolidColorBrush colorNorm = Brushes.SkyBlue;
         public const int price = 10; // Make it const or private, or better pass as entity configuration.

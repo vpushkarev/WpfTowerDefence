@@ -20,11 +20,11 @@ namespace WpfTowerDefence
         public int maxUpgradeLevel = 3;
         public int upgradeCost => UpgradeLevel * 3;
         public int Price { get; private set; }
-        public Enemy Target { get; private set; }
+        public Enemy Target { get; /*private*/ set; }
 
         Player player;
-        Canvas CanvasMap;
-        Button towerLable;
+        Canvas canvasMap;
+        Button towerButton;
         public bool isSingleUpgrade = false;
         public delegate void MethodContainer(int killCost);
         public event MethodContainer onCount;
@@ -33,14 +33,24 @@ namespace WpfTowerDefence
         {
             ColorNorm = colorNorm;
             Location = location;
-            CanvasMap = canvasMap;
+            this.canvasMap = canvasMap;
             Price = price;
             this.player = player;
-            towerLable = CreateTowerLable(location, ColorNorm);
-            CanvasMap.Children.Add(towerLable);
+            towerButton = CreateTowerButton(location, ColorNorm);
+            canvasMap.Children.Add(towerButton);
         }
 
-        private Button CreateTowerLable(Cell location, Brush brush)
+        //For Unit test
+        public Tower(Cell location, int power, int range)
+        {
+            Location = location;
+            this.power = power;
+            this.range = range;
+            towerButton = CreateTowerButton(location, Brushes.Red);
+        }
+        ////////////////////////////////
+
+        private Button CreateTowerButton(Cell location, Brush brush)
         {
             Button tower = new Button();
             tower.Width = 45;
@@ -83,9 +93,9 @@ namespace WpfTowerDefence
             }
         }
 
-        public void FireByTarget(Tower tower)
+        public void FireByTarget()
         {
-            var target = tower.Target;
+            var target = this.Target;
             if (target != null)
             {
                 target.DecreaseHealth(power);
@@ -94,20 +104,20 @@ namespace WpfTowerDefence
 
                 if (target != null)
                 {
-                    Application.Current.Dispatcher.Invoke((Action)(async () =>
+                    Dispatcher.Invoke((Action)(async () =>
                     {
-                        towerLable.Background = ColorShoot;
+                        towerButton.Background = ColorShoot;
                         await Task.Delay(200);
 
                         target.EnemyLable.Background = target.ColorHit;
-                        towerLable.Background = ColorNorm;
+                        towerButton.Background = ColorNorm;
                         await Task.Delay(200);
 
                         target.EnemyLable.Background = target.ColorNormal;
 
                         if (target.IsKilled)
                         {
-                            CanvasMap.Children.Remove(target.EnemyLable);
+                            canvasMap.Children.Remove(target.EnemyLable);
                             onCount?.Invoke(target.KillCost);
                             Debug.WriteLine("Враг убит!!! x={0} y={1}", target.CurrWayPoint.X, target.CurrWayPoint.Y);
                         }
