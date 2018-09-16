@@ -31,7 +31,7 @@ namespace WpfTowerDefence
             KillCost = killCost;
         }
 
-        //For Unit test
+        //ctor for Unit test
         public Enemy(List<Cell> wayPoints, int startHealth, int killCost, Cell currWayPoint)
         {
             StartHealth = startHealth;

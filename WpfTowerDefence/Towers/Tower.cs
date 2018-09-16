@@ -18,7 +18,7 @@ namespace WpfTowerDefence
         public Cell Location { get; private set; }
         public int UpgradeLevel { get; private set; } = 1;
         public int maxUpgradeLevel = 3;
-        public int upgradeCost => UpgradeLevel * 3;
+        public int upgradeCost => UpgradeLevel * 4;
         public int Price { get; private set; }
         public Enemy Target { get; /*private*/ set; }
 
@@ -40,7 +40,7 @@ namespace WpfTowerDefence
             canvasMap.Children.Add(towerButton);
         }
 
-        //For Unit test
+        //ctor for Unit test
         public Tower(Cell location, int power, int range)
         {
             Location = location;

@@ -9,6 +9,7 @@ namespace WpfTowerDefence.Enemies
         static SolidColorBrush colorNormal = Brushes.PeachPuff;
         static int startHealth = 6;
         static int killCost = 4;
+
         public AssassinEnemy(List<Cell> wayPoints, Canvas canvasMap) : base (wayPoints, canvasMap, colorNormal, startHealth, killCost)
         {
         }

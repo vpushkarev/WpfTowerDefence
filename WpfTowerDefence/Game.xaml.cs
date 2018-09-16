@@ -145,7 +145,7 @@ namespace WpfTowerDefence
             Canvas.SetTop(button, point.Y);
             if (GroundIndex == 1)
             {
-                button.IsEnabled = false;
+                //button.IsEnabled = false;
             }
             else
             {
@@ -223,9 +223,6 @@ namespace WpfTowerDefence
             waveManager.StopWaveSpawner();
             towerManager.DeactivateTowers();
             player.TimerPlayerStop();
-
-            //cancellationTokenSource.Cancel();
-            //cancellationTokenSource.Dispose();
         }
 
     }
